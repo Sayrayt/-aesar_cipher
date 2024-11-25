@@ -7,6 +7,7 @@ const Lab2 = () => {
     const [key, setKey] = useState("Ключ");
     const [replacementTable, setReplacementTable] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [variants, setVariant] = useState();
 
     const [encryptedPhrase, setEncryptedPhrase] = useState('');
     const [decryptedPhrase, setDecryptedPhrase] = useState('');
@@ -22,7 +23,7 @@ const Lab2 = () => {
      * @param alphabet - массив букв русского алфавита
      */
     const createReplacementTable = (alphabet) => {
-        const table = [[...russianAlphabet.slice(32), ...russianAlphabet.slice(0, 32)]];
+        const table = [[...russianAlphabet.slice(alphabet.length - 1), ...russianAlphabet.slice(0, alphabet.length - 1)]];
         const length = alphabet.length;
 
         for (let i = 0; i < length; i++) {
@@ -78,9 +79,9 @@ const Lab2 = () => {
         let encrypted = encryptedBlocks.map(block => block.join('')).join('');
 
         // Восстанавливаем спецсимволы в исходные позиции
-        specialCharacters.forEach(({ char, index }) => {
-            encrypted = encrypted.slice(0, index) + char + encrypted.slice(index);
-        });
+        // specialCharacters.forEach(({ char, index }) => {
+        //     encrypted = encrypted.slice(0, index) + char + encrypted.slice(index);
+        // });
 
         setEncryptedPhrase(encrypted);
     };
@@ -129,11 +130,127 @@ const Lab2 = () => {
         let decrypted = decryptedBlocks.map(block => block.join('')).join('');
 
         // Восстанавливаем спецсимволы в исходные позиции
-        specialCharacters.forEach(({ char, index }) => {
-            decrypted = decrypted.slice(0, index) + char + decrypted.slice(index);
-        });
+        // specialCharacters.forEach(({ char, index }) => {
+        //     decrypted = decrypted.slice(0, index) + char + decrypted.slice(index);
+        // });
 
         setDecryptedPhrase(decrypted);
+    };
+    /**
+ * Функция взлома без ключа (Метод Касиски)
+ */
+    const hacking = (encryptedPhrase, syllableLength = 2) => {
+        const syllableData = {};
+
+        // Проходим по строке, извлекая слоги длиной syllableLength
+        for (let i = 0; i <= encryptedPhrase.length - syllableLength; i++) {
+            const syllable = encryptedPhrase.slice(i, i + syllableLength);
+
+            // Если слог уже встречался, добавляем информацию о повторениях и индексах
+            if (syllableData[syllable]) {
+                syllableData[syllable].count++;
+                syllableData[syllable].indices.push(i);
+            } else {
+                // Если слог встречается первый раз, инициализируем его запись
+                syllableData[syllable] = {
+                    count: 1,
+                    indices: [i]
+                };
+            }
+        }
+
+        // Теперь можно вывести результат: только те слоги, которые встречаются больше одного раза
+        const repeatedSyllables = [];
+        for (let syllable in syllableData) {
+            if (syllableData[syllable].count > 1) {
+                repeatedSyllables.push({
+                    syllable,
+                    count: syllableData[syllable].count,
+                    indices: syllableData[syllable].indices
+                });
+            }
+        }
+
+        console.log("Repeated Syllables: ", repeatedSyllables);
+
+        // Получаем разницу индексов между всеми парами индексов
+        const indexDifferences = repeatedSyllables.flatMap(item => {
+            const indices = item.indices;
+            let differences = [];
+            for (let i = 0; i < indices.length - 1; i++) {
+                // Вычисляем разницу между текущим индексом и следующим
+                differences.push(indices[i + 1] - indices[i]);
+            }
+            return differences;
+        });
+
+        console.log("Index Differences: ", indexDifferences);
+
+        // Функция для нахождения делителей числа
+        const getDivisors = (num) => {
+            const divisors = [];
+            for (let i = 3; i <= num; i++) {  // Начинаем с 3, чтобы исключить 1 и 2
+                if (num % i === 0) {
+                    divisors.push(i);
+                }
+            }
+            return divisors;
+        };
+
+        // Массив для хранения всех делителей
+        const allDivisors = [];
+
+        // Находим все делители для чисел из indexDifferences
+        indexDifferences.forEach(diff => {
+            if (diff !== null) {
+                const divisors = getDivisors(diff);
+                allDivisors.push(...divisors);
+            }
+        });
+
+        console.log("All Divisors: ", allDivisors);
+
+        // Подсчитываем частоту встречаемости делителей
+        const divisorFrequency = allDivisors.reduce((acc, divisor) => {
+            acc[divisor] = (acc[divisor] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Сортируем делители по частоте (от наиболее частых к редким)
+        const sortedDivisors = Object.entries(divisorFrequency)
+            .sort((a, b) => b[1] - a[1]) // Сортировка по частоте
+            .map(entry => ({
+                divisor: entry[0],
+                count: entry[1]
+            }));
+
+        console.log("Sorted Divisors by Frequency: ", sortedDivisors);
+
+        // Возьмём наиболее частые делители
+        const topDivisors = sortedDivisors.slice(0, 5);
+
+        console.log("Top Divisors: ", topDivisors);
+
+        // Получаем длину блока на основе делителя (это может быть длина ключа, например)
+        const blockLength = topDivisors[0].divisor;
+
+        // Теперь делаем расшифровку с использованием блоков, определённых длиной ключа
+        let decryptedVariants = [];
+
+        for (let i = 0; i < topDivisors.length; i++) {
+            const length = topDivisors[i].divisor;
+            let candidatePhrase = encryptedPhrase.slice(0, length); // Предполагаемые Ключи в зависимости от длины
+            console.log(candidatePhrase);
+
+            for (let i = 0; i < replacementTable.length; i++) {
+                console.log(replacementTable[i][0]);
+
+            }
+
+        }
+
+        // Обновляем состояние с расшифрованными вариантами
+        setVariant(decryptedVariants);
     };
 
     useEffect(() => {
@@ -194,12 +311,18 @@ const Lab2 = () => {
                 </Button>
             </Box>
             {encryptedPhrase && (
-                <Box>
+                <Box >
                     <Text>Зашифрованная фраза: {encryptedPhrase}</Text>
+
                     <Button colorScheme="teal" onClick={() => { handleDecryption(encryptedPhrase, key) }}>
                         Расшифровать
                     </Button>
+
                     <Text>Расшифрованная фраза: {decryptedPhrase}</Text>
+                    <Button colorScheme="teal" onClick={() => { hacking(encryptedPhrase) }}>
+                        Взломать
+                    </Button>
+                    <Text>Взломанная фраза: {variants}</Text>
                 </Box>
             )}
         </Box>
