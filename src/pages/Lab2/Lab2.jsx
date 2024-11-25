@@ -64,7 +64,7 @@ const Lab2 = () => {
         const encryptedBlocks = blocks.map(block =>
             block.map((letter, index) => {
                 const keyLetter = key[index % key.length].toUpperCase(); // Буква из ключа
-                const keyRow = replacementTable[0].indexOf(keyLetter);
+                const keyRow = replacementTable[0].indexOf(keyLetter); // Буква блока
 
                 // Ищем строку с keyLetter в первой строке replacementTable
                 for (let row = 1; row < replacementTable.length; row++) {
@@ -136,16 +136,17 @@ const Lab2 = () => {
 
         setDecryptedPhrase(decrypted);
     };
+
     /**
- * Функция взлома без ключа (Метод Касиски)
- */
+    * Функция взлома без ключа (Метод Касиски)
+     */
     const hacking = (encryptedPhrase, syllableLength = 2) => {
         const syllableData = {};
 
         // Проходим по строке, извлекая слоги длиной syllableLength
         for (let i = 0; i <= encryptedPhrase.length - syllableLength; i++) {
             const syllable = encryptedPhrase.slice(i, i + syllableLength);
-
+            
             // Если слог уже встречался, добавляем информацию о повторениях и индексах
             if (syllableData[syllable]) {
                 syllableData[syllable].count++;
@@ -159,7 +160,7 @@ const Lab2 = () => {
             }
         }
 
-        // Теперь можно вывести результат: только те слоги, которые встречаются больше одного раза
+       
         const repeatedSyllables = [];
         for (let syllable in syllableData) {
             if (syllableData[syllable].count > 1) {
@@ -171,7 +172,7 @@ const Lab2 = () => {
             }
         }
 
-        console.log("Repeated Syllables: ", repeatedSyllables);
+        console.log("Повторяющиеся слоги: ", repeatedSyllables);
 
         // Получаем разницу индексов между всеми парами индексов
         const indexDifferences = repeatedSyllables.flatMap(item => {
@@ -184,7 +185,7 @@ const Lab2 = () => {
             return differences;
         });
 
-        console.log("Index Differences: ", indexDifferences);
+        console.log("Разницы индексов: ", indexDifferences);
 
         // Функция для нахождения делителей числа
         const getDivisors = (num) => {
@@ -208,13 +209,13 @@ const Lab2 = () => {
             }
         });
 
-        console.log("All Divisors: ", allDivisors);
+        console.log(" Все делители: ", allDivisors);
 
         // Подсчитываем частоту встречаемости делителей
         const divisorFrequency = allDivisors.reduce((acc, divisor) => {
             acc[divisor] = (acc[divisor] || 0) + 1;
             return acc;
-        }, {});
+        }, {});        
 
         // Сортируем делители по частоте (от наиболее частых к редким)
         const sortedDivisors = Object.entries(divisorFrequency)
@@ -224,33 +225,13 @@ const Lab2 = () => {
                 count: entry[1]
             }));
 
-        console.log("Sorted Divisors by Frequency: ", sortedDivisors);
+        console.log("Отсортированный список делителей: ", sortedDivisors);
 
         // Возьмём наиболее частые делители
-        const topDivisors = sortedDivisors.slice(0, 5);
+        const topDivisors = sortedDivisors.slice(0, 3);
 
-        console.log("Top Divisors: ", topDivisors);
+        console.log("Наиболее частые делители: ", topDivisors);
 
-        // Получаем длину блока на основе делителя (это может быть длина ключа, например)
-        const blockLength = topDivisors[0].divisor;
-
-        // Теперь делаем расшифровку с использованием блоков, определённых длиной ключа
-        let decryptedVariants = [];
-
-        for (let i = 0; i < topDivisors.length; i++) {
-            const length = topDivisors[i].divisor;
-            let candidatePhrase = encryptedPhrase.slice(0, length); // Предполагаемые Ключи в зависимости от длины
-            console.log(candidatePhrase);
-
-            for (let i = 0; i < replacementTable.length; i++) {
-                console.log(replacementTable[i][0]);
-
-            }
-
-        }
-
-        // Обновляем состояние с расшифрованными вариантами
-        setVariant(decryptedVariants);
     };
 
     useEffect(() => {
@@ -322,7 +303,7 @@ const Lab2 = () => {
                     <Button colorScheme="teal" onClick={() => { hacking(encryptedPhrase) }}>
                         Взломать
                     </Button>
-                    <Text>Взломанная фраза: {variants}</Text>
+                    <Text>Взломанная фраза: { }</Text>
                 </Box>
             )}
         </Box>
