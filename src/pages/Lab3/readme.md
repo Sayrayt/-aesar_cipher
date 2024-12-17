@@ -3,7 +3,7 @@
 # Хэширование:
 H<sub>i</sub>
 
-H<sub>i</sub> = E<sub>H<sub>i-1</sub></sub>(M<sub>i</sub>) + M<sub>i</sub> Функция хэширования
+H<sub>i</sub> = E<sub>H<sub>i-1</sub></sub>(M<sub>i</sub>) + M<sub>i</sub>  - Функция хэширования
 
 H<sub>i</sub> - Хэш 
 
