@@ -6,7 +6,8 @@ function Header() {
     const routes = [
         { path: '/', label: 'Lab1' },
         { path: '/lab2', label: 'Lab2' },
-        { path: '/lab3', label: 'Lab3' }
+        { path: '/lab3', label: 'Lab3' },
+        { path: '/lab4', label: 'Lab4' }
     ];
 
     return (
